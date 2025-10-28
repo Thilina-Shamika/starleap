@@ -24,6 +24,21 @@ export type WordPressPage = {
   };
 };
 
+export type WordPressService = {
+  id: number;
+  slug: string;
+  title?: { rendered?: string };
+  acf?: {
+    service_name?: string;
+    service_description?: string;
+    service_header?: string;
+    gallery?: WordPressMedia[];
+    project_link?: { title?: string; url?: string; target?: string };
+    service_page_link_text?: string;
+    services_page_link?: string;
+  };
+};
+
 const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 
 if (!WORDPRESS_URL) {
@@ -39,8 +54,9 @@ async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const url = `${WORDPRESS_URL.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"}${path}`;
   const res = await fetch(url, {
     ...init,
-    // Ensure fresh data for metadata while still allowing ISR elsewhere
-    next: { revalidate: 300 },
+    // Ensure fresh data for services
+    next: { revalidate: 0 },
+    cache: 'no-store'
   } as any);
 
   if (!res.ok) {
@@ -84,6 +100,17 @@ export async function getPageBySlug(slug: string): Promise<WordPressPage | null>
     return Array.isArray(results) && results.length > 0 ? results[0] : null;
   } catch {
     return null;
+  }
+}
+
+export async function getServices(): Promise<WordPressService[]> {
+  try {
+    const results = await wpFetch<WordPressService[]>(`/wp-json/wp/v2/service?_acf_format=standard&_fields=id,slug,title,acf&per_page=100`);
+    console.log('Fetched services:', results);
+    return Array.isArray(results) ? results : [];
+  } catch (error) {
+    console.error('Error fetching services:', error);
+    return [];
   }
 }
 

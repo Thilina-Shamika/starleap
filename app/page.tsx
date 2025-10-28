@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { Hero } from "@/components/hero";
+import ServicesSection from "@/components/services-section";
 import { getAcfOptions, getPageBySlug } from "@/lib/wordpress";
 
 export default async function Home() {
@@ -25,9 +26,7 @@ export default async function Home() {
           description={acf?.hero_description}
           backgroundImageUrl={bgUrl}
         />
-        <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
-          {/* Additional sections will go here */}
-        </div>
+        <ServicesSection />
       </main>
       <SiteFooter />
     </div>

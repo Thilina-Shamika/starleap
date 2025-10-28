@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 type HeroProps = {
   subHeading?: string;
@@ -10,8 +11,40 @@ type HeroProps = {
 };
 
 export function Hero({ subHeading, heading, description, backgroundImageUrl }: HeroProps) {
+  const heroRef = useRef<HTMLElement>(null);
+  const subHeadingRef = useRef<HTMLParagraphElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  const descriptionRef = useRef<HTMLParagraphElement>(null);
+
+  useEffect(() => {
+    const tl = gsap.timeline();
+    
+    if (subHeadingRef.current) {
+      tl.fromTo(subHeadingRef.current, 
+        { opacity: 0, y: 6 }, 
+        { opacity: 1, y: 0, duration: 0.4 }
+      );
+    }
+    
+    if (headingRef.current) {
+      tl.fromTo(headingRef.current, 
+        { opacity: 0, y: 8 }, 
+        { opacity: 1, y: 0, duration: 0.5 }, 
+        0.05
+      );
+    }
+    
+    if (descriptionRef.current) {
+      tl.fromTo(descriptionRef.current, 
+        { opacity: 0, y: 8 }, 
+        { opacity: 1, y: 0, duration: 0.5 }, 
+        0.1
+      );
+    }
+  }, []);
+
   return (
-    <section className="relative isolate h-dvh overflow-hidden rounded-2xl border">
+    <section ref={heroRef} className="relative isolate h-dvh overflow-hidden rounded-2xl border">
       {backgroundImageUrl ? (
         <div className="pointer-events-none absolute inset-0 -z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -29,34 +62,28 @@ export function Hero({ subHeading, heading, description, backgroundImageUrl }: H
         <div className="pointer-events-auto mx-auto w-full max-w-6xl px-4 pb-16 text-center text-white sm:px-6 sm:pb-24 md:pb-28">
           <div className="mx-auto max-w-3xl">
           {subHeading ? (
-            <motion.p
+            <p
+              ref={subHeadingRef}
               className="text-sm font-medium uppercase tracking-widest text-white/80"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
             >
               {subHeading}
-            </motion.p>
+            </p>
           ) : null}
           {heading ? (
-            <motion.h1
+            <h1
+              ref={headingRef}
               className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-[96px] lg:leading-[88px] lg:tracking-[-0.03em]"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.05 }}
             >
               {heading}
-            </motion.h1>
+            </h1>
           ) : null}
           {description ? (
-            <motion.p
+            <p
+              ref={descriptionRef}
               className="mt-5 text-base text-white/85 sm:text-lg"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
             >
               {description}
-            </motion.p>
+            </p>
           ) : null}
           </div>
         </div>
