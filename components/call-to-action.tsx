@@ -41,7 +41,7 @@ export default function CallToAction() {
                 <h2 className="text-3xl md:text-5xl font-bold text-white">
                   Let’s Build Your Content Empire
                 </h2>
-                <p className="mt-4 text-white/80 text-base md:text-lg">
+                <p className="mt-4 text-white/80 text-[16px]">
                   Ready to turn your message into a movement? Let’s build your content empire and grow your impact with ease.
                 </p>
 
