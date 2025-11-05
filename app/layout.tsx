@@ -4,6 +4,7 @@ import { getAcfOptions } from "@/lib/wordpress";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { LenisProvider } from "@/components/lenis-provider";
+import Aurora from "@/components/Aurora";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -45,8 +46,14 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <Aurora
+          colorStops={["#6a0dad", "#3b0066", "#0b001a"]}
+          blend={0.5}
+          amplitude={1.0}
+          speed={0.5}
+        />
         <LenisProvider>
-          <div className="min-h-dvh p-[10px]">
+          <div className="min-h-dvh p-[10px] bg-transparent relative z-10" style={{ backgroundColor: 'transparent' }}>
             {children}
           </div>
         </LenisProvider>

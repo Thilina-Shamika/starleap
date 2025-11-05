@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
@@ -8,9 +7,10 @@ type HeroProps = {
   heading?: string;
   description?: string;
   backgroundImageUrl?: string;
+  backgroundVideoUrl?: string;
 };
 
-export function Hero({ subHeading, heading, description, backgroundImageUrl }: HeroProps) {
+export function Hero({ subHeading, heading, description, backgroundImageUrl, backgroundVideoUrl }: HeroProps) {
   const heroRef = useRef<HTMLElement>(null);
   const subHeadingRef = useRef<HTMLParagraphElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -44,8 +44,21 @@ export function Hero({ subHeading, heading, description, backgroundImageUrl }: H
   }, []);
 
   return (
-    <section ref={heroRef} className="relative isolate h-dvh overflow-hidden rounded-2xl border">
-      {backgroundImageUrl ? (
+    <section ref={heroRef} className="relative isolate h-dvh overflow-hidden rounded-2xl">
+      {backgroundVideoUrl ? (
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="h-full w-full object-cover"
+          >
+            <source src={backgroundVideoUrl} type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
+        </div>
+      ) : backgroundImageUrl ? (
         <div className="pointer-events-none absolute inset-0 -z-10">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -55,7 +68,7 @@ export function Hero({ subHeading, heading, description, backgroundImageUrl }: H
             loading="eager"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-black/35" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
         </div>
       ) : null}
       <div className="pointer-events-none absolute inset-x-0 bottom-0">

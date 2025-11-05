@@ -39,6 +39,21 @@ export type WordPressService = {
   };
 };
 
+export type WordPressPackage = {
+  id: number;
+  slug: string;
+  title?: { rendered?: string };
+  acf?: {
+    package_name?: string;
+    monthly_charge?: string;
+    for_whom?: string;
+    package_info?: Array<{
+      item_heading?: string;
+      item_list?: Array<{ items?: string }> | false;
+    }>;
+  };
+};
+
 const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 
 if (!WORDPRESS_URL) {
@@ -110,6 +125,18 @@ export async function getServices(): Promise<WordPressService[]> {
     return Array.isArray(results) ? results : [];
   } catch (error) {
     console.error('Error fetching services:', error);
+    return [];
+  }
+}
+
+export async function getPackages(): Promise<WordPressPackage[]> {
+  try {
+    const results = await wpFetch<WordPressPackage[]>(
+      `/wp-json/wp/v2/package?_acf_format=standard&_fields=id,slug,title,acf&per_page=100`
+    );
+    return Array.isArray(results) ? results : [];
+  } catch (error) {
+    console.error('Error fetching packages:', error);
     return [];
   }
 }

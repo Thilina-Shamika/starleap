@@ -46,8 +46,8 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --background: #000000;
+  --foreground: oklch(0.985 0 0);
   /* Purple palette extracted from image */
   --purple-50: #f6e8ff;
   --purple-100: #edd1ff;
@@ -59,10 +59,10 @@
   --purple-700: #560fbd;
   --purple-800: #3f0c89;
   --purple-900: #2a095e;
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --card: #000000;
+  --card-foreground: oklch(0.985 0 0);
+  --popover: #000000;
+  --popover-foreground: oklch(0.985 0 0);
   --primary: var(--purple-500);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
@@ -128,8 +128,12 @@
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    background: #000000 !important;
+  }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    background: #000000 !important;
   }
 }
 

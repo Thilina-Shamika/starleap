@@ -9,9 +9,10 @@ import './FlowingMenu.css';
 function FlowingMenu({ items = [] }) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxSlides, setLightboxSlides] = useState([]);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const openLightbox = (images) => {
-    console.log('openLightbox called with images:', images);
+  const openLightbox = (images, clickedImageIndex = 0) => {
+    console.log('openLightbox called with images:', images, 'clicked index:', clickedImageIndex);
     if (images && images.length > 0) {
       const slides = images.map(img => ({
         src: img.url || img.sizes?.['large'] || img.sizes?.['medium_large'] || img.sizes?.['medium'] || img.url,
@@ -21,6 +22,7 @@ function FlowingMenu({ items = [] }) {
       }));
       console.log('Lightbox slides:', slides);
       setLightboxSlides(slides);
+      setLightboxIndex(clickedImageIndex);
       setLightboxOpen(true);
     } else {
       console.log('No images to show in lightbox');
@@ -34,7 +36,7 @@ function FlowingMenu({ items = [] }) {
           <MenuItem 
             key={idx} 
             {...item} 
-            onImageClick={() => openLightbox(item.images)} 
+            onImageClick={(imageIndex) => openLightbox(item.images, imageIndex)} 
           />
         ))}
       </nav>
@@ -43,9 +45,16 @@ function FlowingMenu({ items = [] }) {
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
         slides={lightboxSlides}
+        index={lightboxIndex}
         render={{
           buttonPrev: lightboxSlides.length <= 1 ? () => null : undefined,
           buttonNext: lightboxSlides.length <= 1 ? () => null : undefined,
+        }}
+        styles={{
+          container: {
+            backdropFilter: 'blur(10px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          },
         }}
       />
     </div>
@@ -90,7 +99,7 @@ function MenuItem({ link, text, images = [], onImageClick }) {
     
     // Check if the mouse is moving to an image within the marquee
     const relatedTarget = ev.relatedTarget;
-    if (relatedTarget && relatedTarget.classList.contains('marquee__img')) {
+    if (relatedTarget && relatedTarget.classList && relatedTarget.classList.contains('marquee__img')) {
       return; // Don't hide marquee if moving to an image
     }
     
@@ -105,11 +114,11 @@ function MenuItem({ link, text, images = [], onImageClick }) {
       .to(marqueeInnerRef.current, { y: edge === 'top' ? '101%' : '-101%' }, 0);
   };
 
-  const handleImageClick = (e) => {
+  const handleImageClick = (e, imageIndex) => {
     e.preventDefault();
     e.stopPropagation();
-    console.log('Image clicked, images:', images);
-    onImageClick();
+    console.log('Image clicked, images:', images, 'image index:', imageIndex);
+    onImageClick(imageIndex);
   };
 
   // Create repeated content with all gallery images
@@ -123,7 +132,7 @@ function MenuItem({ link, text, images = [], onImageClick }) {
           style={{ 
             backgroundImage: `url(${img.url || img.sizes?.['large'] || img.sizes?.['medium_large'] || img.sizes?.['medium'] || img.url})` 
           }}
-          onClick={handleImageClick}
+          onClick={(e) => handleImageClick(e, imgIdx)}
         />
       ))}
     </React.Fragment>
