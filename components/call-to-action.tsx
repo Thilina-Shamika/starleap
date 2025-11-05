@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail, MapPin, User, MessageSquareText, ArrowRight } from "lucide-react";
 
 export default function CallToAction() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,8 +34,8 @@ export default function CallToAction() {
           {/* soft gradient like hero (purple → light purple → light red) */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-600/30 via-fuchsia-400/25 to-rose-500/25" />
 
-          <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-12">
-            <div className="grid md:grid-cols-2 gap-10 items-center">
+          <div className="relative z-10 max-w-6xl mx-auto px-8 md:px-12" suppressHydrationWarning>
+            <div className="grid md:grid-cols-2 gap-10 items-center" suppressHydrationWarning>
               {/* Left text */}
               <div>
                 <h2 className="text-3xl md:text-5xl font-bold text-white">
@@ -54,33 +59,45 @@ export default function CallToAction() {
 
               {/* Right form */}
               <div className="rounded-2xl bg-white/5 border border-white/10 p-5 md:p-6">
-                <form onSubmit={submit} className="grid gap-3 text-white">
+                {mounted && (
+                <form onSubmit={submit} className="grid gap-3 text-white" autoComplete="off" data-lpignore="true" data-lastpass-ignore="true">
                   <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
                     <User className="h-4 w-4 text-white/70" />
                     <input
-                      name="name"
+                      name="contact_name"
                       placeholder="Your name"
                       required
                       className="w-full bg-transparent outline-none text-sm placeholder:text-white/50"
+                      autoComplete="off"
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      data-lpignore="true"
+                      data-lastpass-ignore="true"
                     />
                   </div>
                   <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
                     <Mail className="h-4 w-4 text-white/70" />
                     <input
                       type="email"
-                      name="email"
+                      name="contact_email"
                       placeholder="Email"
                       required
                       className="w-full bg-transparent outline-none text-sm placeholder:text-white/50"
+                      autoComplete="new-password"
+                      data-lpignore="true"
+                      data-lastpass-ignore="true"
                     />
                   </div>
                   <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
                     <MessageSquareText className="h-4 w-4 mt-1 text-white/70" />
                     <textarea
-                      name="message"
+                      name="contact_message"
                       placeholder="Tell us about your goals"
                       rows={4}
                       className="w-full bg-transparent outline-none text-sm placeholder:text-white/50"
+                      autoComplete="off"
+                      data-lpignore="true"
+                      data-lastpass-ignore="true"
                     />
                   </div>
                   <input type="hidden" name="source" value="cta" />
@@ -95,6 +112,7 @@ export default function CallToAction() {
                     </button>
                   </div>
                 </form>
+                )}
               </div>
             </div>
           </div>

@@ -54,6 +54,40 @@ export type WordPressPackage = {
   };
 };
 
+export type HeaderMenuItem = {
+  menu_item_name?: string;
+  menu_item_link?: { title?: string; url?: string; target?: string };
+};
+
+export type WordPressHeader = {
+  acf?: {
+    menu_item?: HeaderMenuItem[];
+    get_started_button_text?: string;
+    get_started_button_link?: string | { url?: string; target?: string };
+  };
+};
+
+export type WordPressFooter = {
+  acf?: {
+    menu_item?: HeaderMenuItem[];
+    get_started_button_text?: string;
+    get_started_button_link?: string | { url?: string; target?: string };
+    terms_and_conditions?: string;
+    terms_and_condition_link?: string | { url?: string; target?: string };
+    privacy_policy?: string;
+    privacy_policy_link?: string | { url?: string; target?: string };
+    return_policy?: string;
+    return_policy_link?: string | { url?: string; target?: string };
+    address?: string;
+    phone?: string;
+    email?: string;
+    social_media_accounts?: Array<{
+      social_media_name?: string;
+      social_media_link?: string | { url?: string; target?: string };
+    }>;
+  };
+};
+
 const WORDPRESS_URL = process.env.NEXT_PUBLIC_WORDPRESS_URL;
 
 if (!WORDPRESS_URL) {
@@ -138,6 +172,30 @@ export async function getPackages(): Promise<WordPressPackage[]> {
   } catch (error) {
     console.error('Error fetching packages:', error);
     return [];
+  }
+}
+
+export async function getHeaderConfig(): Promise<WordPressHeader | null> {
+  try {
+    const results = await wpFetch<WordPressHeader[]>(
+      `/wp-json/wp/v2/header?_acf_format=standard&_fields=acf&per_page=1`
+    );
+    return Array.isArray(results) && results.length ? results[0] : null;
+  } catch (error) {
+    console.error('Error fetching header config:', error);
+    return null;
+  }
+}
+
+export async function getFooterConfig(): Promise<WordPressFooter | null> {
+  try {
+    const results = await wpFetch<WordPressFooter[]>(
+      `/wp-json/wp/v2/footer?_acf_format=standard&_fields=acf&per_page=1`
+    );
+    return Array.isArray(results) && results.length ? results[0] : null;
+  } catch (error) {
+    console.error('Error fetching footer config:', error);
+    return null;
   }
 }
 

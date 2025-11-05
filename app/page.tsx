@@ -1,5 +1,5 @@
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import SiteHeaderServer from "@/components/site-header-server";
+import FooterServer from "@/components/footer-server";
 import { Hero } from "@/components/hero";
 import { LogoCarousel } from "@/components/logo-carousel";
 import ServicesSection from "@/components/services-section";
@@ -27,7 +27,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col font-sans bg-transparent">
-      <SiteHeader siteName={options.siteName ?? "Website"} />
+      <SiteHeaderServer />
       <main className="flex-1">
         <Hero
           subHeading={acf?.hero_sub_heading}
@@ -43,7 +43,7 @@ export default async function Home() {
         <Packages />
         <CallToAction />
       </main>
-      <SiteFooter />
+      <FooterServer />
     </div>
   );
 }
