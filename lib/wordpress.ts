@@ -147,7 +147,7 @@ export async function getAcfOptions(): Promise<WordPressOptions> {
     const index = await wpFetch<any>("/wp-json");
     if (index) {
       return {
-        siteName: index?.name,
+        siteName: index?.name || "Starleap Global",
         faviconUrl: index?.site_icon_url,
       };
     }
@@ -155,7 +155,10 @@ export async function getAcfOptions(): Promise<WordPressOptions> {
     // Ignore errors
   }
   
-  return {};
+  // Final fallback
+  return {
+    siteName: "Starleap Global",
+  };
 }
 
 export async function getPageBySlug(slug: string): Promise<WordPressPage | null> {

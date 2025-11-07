@@ -1,9 +1,10 @@
-import { getFooterConfig } from '@/lib/wordpress';
+import { getFooterConfig, getAcfOptions } from '@/lib/wordpress';
 import Link from 'next/link';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter } from 'lucide-react';
 
 export default async function FooterServer() {
-  const footer = await getFooterConfig();
+  const [footer, options] = await Promise.all([getFooterConfig(), getAcfOptions()]);
+  const siteName = options.siteName ?? 'Starleap Global';
   const acf: any = footer?.acf ?? {};
   const menu: any[] = Array.isArray(acf.menu_item) ? acf.menu_item : [];
   const socials: any[] = Array.isArray(acf.social_media_accounts) ? acf.social_media_accounts : [];
@@ -21,7 +22,7 @@ export default async function FooterServer() {
         <div className="relative w-full rounded-[28px] md:rounded-[32px] bg-black/40 text-white border border-white/10 backdrop-blur shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)]">
           <div className="grid md:grid-cols-4 gap-8 px-8 md:px-12 py-8">
             <div>
-              <div className="text-2xl font-semibold">Starleap</div>
+              <div className="text-2xl font-semibold">{siteName}</div>
               <div className="mt-4 space-y-2 text-white/80 text-sm">
                 {acf.address && (
                   <div className="flex items-start gap-2"><MapPin className="h-4 w-4 mt-0.5" /><span>{acf.address}</span></div>
@@ -79,7 +80,7 @@ export default async function FooterServer() {
           </div>
 
           <div className="px-8 md:px-12 pb-8 pt-2 border-0">
-            <p className="text-center text-xs text-white/60">© {new Date().getFullYear()} Starleap. All rights reserved.</p>
+            <p className="text-center text-xs text-white/60">© {new Date().getFullYear()} {siteName}. All rights reserved.</p>
           </div>
         </div>
       </div>

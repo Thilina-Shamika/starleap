@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 
 export async function generateMetadata(): Promise<Metadata> {
   const options = await getAcfOptions();
-  const title = options.siteName ?? "Website";
+  const title = options.siteName ?? "Starleap Global";
   const icons = options.faviconUrl ? [{ url: options.faviconUrl }] : undefined;
   return {
     title,
