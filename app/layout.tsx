@@ -24,12 +24,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const icons = options.faviconUrl ? [{ url: options.faviconUrl }] : undefined;
   return {
     title,
-    description: `${title} — powered by Next.js`,
+    description: title,
     icons,
     metadataBase: typeof process.env.NEXT_PUBLIC_SITE_URL === "string" ? new URL(process.env.NEXT_PUBLIC_SITE_URL) : undefined,
     openGraph: {
       title,
       siteName: title,
+      description: title,
     },
     twitter: {
       title,
