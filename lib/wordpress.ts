@@ -95,9 +95,9 @@ if (!WORDPRESS_URL) {
   // Consumers should check for empty results
 }
 
-async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
+async function wpFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
   if (!WORDPRESS_URL) {
-    return Promise.resolve({} as T);
+    return Promise.resolve(null);
   }
 
   const url = `${WORDPRESS_URL.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"}${path}`;
@@ -109,6 +109,12 @@ async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
   } as any);
 
   if (!res.ok) {
+    // Return null for 404s instead of throwing - allows graceful degradation
+    if (res.status === 404) {
+      console.warn(`WordPress endpoint not found: ${path} (404)`);
+      return null;
+    }
+    // Still throw for other errors (500, 403, etc.)
     throw new Error(`WordPress request failed: ${res.status} ${res.statusText}`);
   }
   return (await res.json()) as T;
@@ -119,34 +125,44 @@ async function wpFetch<T>(path: string, init?: RequestInit): Promise<T> {
 export async function getAcfOptions(): Promise<WordPressOptions> {
   try {
     const data = await wpFetch<any>("/wp-json/acf/v3/options/options");
-    const acf = data?.acf ?? {};
+    if (!data) {
+      // Fall through to WP general settings
+    } else {
+      const acf = data?.acf ?? {};
 
-    const rawFavicon = acf?.favicon ?? acf?.site_icon ?? acf?.site_favicon;
-    const faviconUrl: string | undefined = typeof rawFavicon === "string" ? rawFavicon : rawFavicon?.url;
+      const rawFavicon = acf?.favicon ?? acf?.site_icon ?? acf?.site_favicon;
+      const faviconUrl: string | undefined = typeof rawFavicon === "string" ? rawFavicon : rawFavicon?.url;
 
-    const siteName: string | undefined = acf?.site_name ?? acf?.sitename ?? acf?.site_title;
+      const siteName: string | undefined = acf?.site_name ?? acf?.sitename ?? acf?.site_title;
 
-    return { siteName, faviconUrl };
+      return { siteName, faviconUrl };
+    }
   } catch {
-    // Fall back to WP general settings via REST if available
-    try {
-      // /wp-json is the index, often exposes name and site_icon_url via /wp-json
-      const index = await wpFetch<any>("/wp-json");
+    // Fall through to WP general settings
+  }
+  
+  // Fall back to WP general settings via REST if available
+  try {
+    // /wp-json is the index, often exposes name and site_icon_url via /wp-json
+    const index = await wpFetch<any>("/wp-json");
+    if (index) {
       return {
         siteName: index?.name,
         faviconUrl: index?.site_icon_url,
       };
-    } catch {
-      return {};
     }
+  } catch {
+    // Ignore errors
   }
+  
+  return {};
 }
 
 export async function getPageBySlug(slug: string): Promise<WordPressPage | null> {
   try {
     // Ensure we get ACF fields on pages
     const results = await wpFetch<WordPressPage[]>(`/wp-json/wp/v2/pages?slug=${encodeURIComponent(slug)}&_acf_format=standard&_fields=id,slug,title,content,acf`);
-    return Array.isArray(results) && results.length > 0 ? results[0] : null;
+    return results && Array.isArray(results) && results.length > 0 ? results[0] : null;
   } catch {
     return null;
   }
@@ -155,6 +171,10 @@ export async function getPageBySlug(slug: string): Promise<WordPressPage | null>
 export async function getServices(): Promise<WordPressService[]> {
   try {
     const results = await wpFetch<WordPressService[]>(`/wp-json/wp/v2/service?_acf_format=standard&_fields=id,slug,title,acf&per_page=100`);
+    if (!results) {
+      console.warn('Services endpoint returned null (endpoint may not exist)');
+      return [];
+    }
     console.log('Fetched services:', results);
     return Array.isArray(results) ? results : [];
   } catch (error) {
@@ -168,6 +188,10 @@ export async function getPackages(): Promise<WordPressPackage[]> {
     const results = await wpFetch<WordPressPackage[]>(
       `/wp-json/wp/v2/package?_acf_format=standard&_fields=id,slug,title,acf&per_page=100`
     );
+    if (!results) {
+      console.warn('Packages endpoint returned null (endpoint may not exist)');
+      return [];
+    }
     return Array.isArray(results) ? results : [];
   } catch (error) {
     console.error('Error fetching packages:', error);
@@ -180,6 +204,10 @@ export async function getHeaderConfig(): Promise<WordPressHeader | null> {
     const results = await wpFetch<WordPressHeader[]>(
       `/wp-json/wp/v2/header?_acf_format=standard&_fields=acf&per_page=1`
     );
+    if (!results) {
+      console.warn('Header endpoint returned null (endpoint may not exist)');
+      return null;
+    }
     return Array.isArray(results) && results.length ? results[0] : null;
   } catch (error) {
     console.error('Error fetching header config:', error);
@@ -192,6 +220,10 @@ export async function getFooterConfig(): Promise<WordPressFooter | null> {
     const results = await wpFetch<WordPressFooter[]>(
       `/wp-json/wp/v2/footer?_acf_format=standard&_fields=acf&per_page=1`
     );
+    if (!results) {
+      console.warn('Footer endpoint returned null (endpoint may not exist)');
+      return null;
+    }
     return Array.isArray(results) && results.length ? results[0] : null;
   } catch (error) {
     console.error('Error fetching footer config:', error);

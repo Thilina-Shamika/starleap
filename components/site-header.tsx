@@ -20,7 +20,7 @@ export function SiteHeader({ siteName = "Site", items = [], ctaText, ctaLink }: 
   if (!mounted) {
     return (
       <header className="pointer-events-none fixed left-1/2 top-4 z-50 -translate-x-1/2">
-        <div className="pointer-events-auto mx-auto flex h-12 items-center justify-between gap-4 rounded-full bg-black/40 px-4 text-white backdrop-blur supports-backdrop-filter:bg-black/30 sm:h-14 font-sans">
+        <div className="pointer-events-auto mx-auto flex h-12 items-center justify-between gap-4 rounded-full bg-black/40 px-4 text-white backdrop-blur supports-backdrop-filter:bg-black/30 sm:h-14 font-sans md:min-w-[780px] lg:min-w-[920px] xl:min-w-[1100px]">
           <Link href="/" className="font-semibold tracking-tight">
             {siteName}
           </Link>
@@ -52,7 +52,7 @@ export function SiteHeader({ siteName = "Site", items = [], ctaText, ctaLink }: 
 
   return (
     <header className="pointer-events-none fixed left-1/2 top-4 z-50 -translate-x-1/2">
-      <div className="pointer-events-auto mx-auto flex h-12 items-center justify-between gap-4 rounded-full bg-black/40 px-4 text-white backdrop-blur supports-backdrop-filter:bg-black/30 sm:h-14 font-sans">
+      <div className="pointer-events-auto mx-auto flex h-12 items-center justify-between gap-4 rounded-full bg-black/40 px-4 text-white backdrop-blur supports-backdrop-filter:bg-black/30 sm:h-14 font-sans md:min-w-[780px] lg:min-w-[920px] xl:min-w-[1100px]">
         <Link href="/" className="font-semibold tracking-tight">
           {siteName}
         </Link>

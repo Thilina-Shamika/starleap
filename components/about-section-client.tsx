@@ -85,10 +85,10 @@ export function AboutSectionClient({
                   {/* Meeting platform icons */}
                   <div className="mt-4 flex items-center justify-center gap-4 text-white/70">
                     <span className="sr-only">Available on</span>
-                    <Presentation aria-label="Google Meet" title="Google Meet" className="h-5 w-5" />
-                    <Video aria-label="Zoom" title="Zoom" className="h-5 w-5" />
-                    <Users aria-label="Microsoft Teams" title="Microsoft Teams" className="h-5 w-5" />
-                    <MessageCircle aria-label="WhatsApp" title="WhatsApp" className="h-5 w-5" />
+                    <Presentation aria-label="Google Meet" className="h-5 w-5" />
+                    <Video aria-label="Zoom" className="h-5 w-5" />
+                    <Users aria-label="Microsoft Teams" className="h-5 w-5" />
+                    <MessageCircle aria-label="WhatsApp" className="h-5 w-5" />
                   </div>
                 </div>
               )}

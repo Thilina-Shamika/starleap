@@ -6,12 +6,31 @@ import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 import './FlowingMenu.css';
 
-function FlowingMenu({ items = [] }) {
+type ImageType = {
+  url?: string;
+  sizes?: Record<string, string>;
+  alt?: string;
+  title?: string;
+  width?: number;
+  height?: number;
+};
+
+type MenuItemType = {
+  link?: string;
+  text?: string;
+  images?: ImageType[];
+};
+
+type FlowingMenuProps = {
+  items?: MenuItemType[];
+};
+
+function FlowingMenu({ items = [] }: FlowingMenuProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxSlides, setLightboxSlides] = useState([]);
+  const [lightboxSlides, setLightboxSlides] = useState<any[]>([]);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const openLightbox = (images, clickedImageIndex = 0) => {
+  const openLightbox = (images: ImageType[] | undefined, clickedImageIndex = 0) => {
     console.log('openLightbox called with images:', images, 'clicked index:', clickedImageIndex);
     if (images && images.length > 0) {
       const slides = images.map(img => ({
@@ -61,26 +80,33 @@ function FlowingMenu({ items = [] }) {
   );
 }
 
-function MenuItem({ link, text, images = [], onImageClick }) {
-  const itemRef = React.useRef(null);
-  const marqueeRef = React.useRef(null);
-  const marqueeInnerRef = React.useRef(null);
+type MenuItemProps = {
+  link?: string;
+  text?: string;
+  images?: ImageType[];
+  onImageClick?: (imageIndex: number) => void;
+};
+
+function MenuItem({ link, text, images = [], onImageClick }: MenuItemProps) {
+  const itemRef = React.useRef<HTMLDivElement>(null);
+  const marqueeRef = React.useRef<HTMLDivElement>(null);
+  const marqueeInnerRef = React.useRef<HTMLDivElement>(null);
 
   const animationDefaults = { duration: 0.6, ease: 'expo' };
 
-  const findClosestEdge = (mouseX, mouseY, width, height) => {
+  const findClosestEdge = (mouseX: number, mouseY: number, width: number, height: number) => {
     const topEdgeDist = distMetric(mouseX, mouseY, width / 2, 0);
     const bottomEdgeDist = distMetric(mouseX, mouseY, width / 2, height);
     return topEdgeDist < bottomEdgeDist ? 'top' : 'bottom';
   };
 
-  const distMetric = (x, y, x2, y2) => {
+  const distMetric = (x: number, y: number, x2: number, y2: number) => {
     const xDiff = x - x2;
     const yDiff = y - y2;
     return xDiff * xDiff + yDiff * yDiff;
   };
 
-  const handleMouseEnter = ev => {
+  const handleMouseEnter = (ev: React.MouseEvent<HTMLAnchorElement>) => {
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return;
     const rect = itemRef.current.getBoundingClientRect();
     const x = ev.clientX - rect.left;
@@ -94,12 +120,12 @@ function MenuItem({ link, text, images = [], onImageClick }) {
       .to([marqueeRef.current, marqueeInnerRef.current], { y: '0%' }, 0);
   };
 
-  const handleMouseLeave = ev => {
+  const handleMouseLeave = (ev: React.MouseEvent<HTMLAnchorElement>) => {
     if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return;
     
     // Check if the mouse is moving to an image within the marquee
     const relatedTarget = ev.relatedTarget;
-    if (relatedTarget && relatedTarget.classList && relatedTarget.classList.contains('marquee__img')) {
+    if (relatedTarget && relatedTarget instanceof HTMLElement && relatedTarget.classList.contains('marquee__img')) {
       return; // Don't hide marquee if moving to an image
     }
     
@@ -114,11 +140,13 @@ function MenuItem({ link, text, images = [], onImageClick }) {
       .to(marqueeInnerRef.current, { y: edge === 'top' ? '101%' : '-101%' }, 0);
   };
 
-  const handleImageClick = (e, imageIndex) => {
+  const handleImageClick = (e: React.MouseEvent<HTMLDivElement>, imageIndex: number) => {
     e.preventDefault();
     e.stopPropagation();
     console.log('Image clicked, images:', images, 'image index:', imageIndex);
-    onImageClick(imageIndex);
+    if (onImageClick) {
+      onImageClick(imageIndex);
+    }
   };
 
   // Create repeated content with all gallery images
