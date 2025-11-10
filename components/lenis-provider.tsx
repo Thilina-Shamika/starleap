@@ -7,7 +7,6 @@ export function LenisProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const lenis = new Lenis({
       smoothWheel: true,
-      smoothTouch: true,
       lerp: 0.05,
       duration: 2.0,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
