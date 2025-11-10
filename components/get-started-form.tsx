@@ -1,17 +1,48 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { User, Mail, Briefcase, MessageSquareText, ArrowRight } from "lucide-react";
 
 type GetStartedFormProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  defaultService?: string;
 };
 
-export function GetStartedForm({ open, onOpenChange }: GetStartedFormProps) {
+export function GetStartedForm({ open, onOpenChange, defaultService }: GetStartedFormProps) {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const selectRef = useRef<HTMLSelectElement>(null);
+  
+  // Map service names to dropdown values
+  const getServiceValue = (serviceName?: string): string => {
+    if (!serviceName) return '';
+    const name = serviceName.toLowerCase();
+    if (name.includes('video') || name.includes('editing')) return 'video';
+    if (name.includes('web') || name.includes('development')) return 'web';
+    return '';
+  };
+  
+  const selectedService = getServiceValue(defaultService);
+
+  // Update select value when defaultService changes
+  useEffect(() => {
+    if (open && selectRef.current) {
+      selectRef.current.value = selectedService;
+    }
+  }, [open, selectedService]);
+
+  // Reset form when dialog closes
+  useEffect(() => {
+    if (!open) {
+      setSent(false);
+      setLoading(false);
+      if (selectRef.current) {
+        selectRef.current.value = '';
+      }
+    }
+  }, [open]);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,8 +104,10 @@ export function GetStartedForm({ open, onOpenChange }: GetStartedFormProps) {
           <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
             <Briefcase className="h-4 w-4 text-white/70 flex-shrink-0" />
             <select
+              ref={selectRef}
               name="service_wanted"
               required
+              defaultValue={selectedService}
               className="w-full bg-transparent outline-none text-sm text-white appearance-none cursor-pointer"
               style={{ colorScheme: 'dark' }}
             >

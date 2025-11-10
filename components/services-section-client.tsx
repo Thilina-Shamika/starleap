@@ -1,7 +1,8 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { GetStartedForm } from './get-started-form';
 import {
   SiNextdotjs,
   SiReact,
@@ -100,6 +101,9 @@ export function ServicesSectionClient({
   buttonText,
   buttonLink
 }: ServicesSectionClientProps) {
+  const [formOpen, setFormOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<string | undefined>();
+
   if (!services || services.length === 0) {
     return null;
   }
@@ -125,14 +129,17 @@ export function ServicesSectionClient({
                 {description}
               </p>
             )}
-            {buttonText && buttonLink && (
-              <Link
-                href={buttonLink}
+            {buttonText && (
+              <button
+                onClick={() => {
+                  setSelectedService(undefined);
+                  setFormOpen(true);
+                }}
                 className="inline-flex items-center justify-center rounded-full px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 backdrop-blur-sm border border-purple-500/30 transition-all duration-300 shadow-lg hover:shadow-xl self-start"
                 style={{ fontFamily: "SF Pro Display, var(--font-geist-sans), sans-serif" }}
               >
                 {buttonText}
-              </Link>
+              </button>
             )}
           </div>
 
@@ -189,14 +196,15 @@ export function ServicesSectionClient({
                   <div className="flex-grow" />
 
                   {/* Button */}
-                  <Link
-                    href={buttonLink}
-                    target={buttonTarget === '_blank' ? '_blank' : undefined}
-                    rel={buttonTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                  <button
+                    onClick={() => {
+                      setSelectedService(serviceName);
+                      setFormOpen(true);
+                    }}
                     className="inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-500/20 via-purple-600/20 to-purple-500/20 hover:from-purple-500/30 hover:via-purple-600/30 hover:to-purple-500/30 backdrop-blur-sm border border-white/20 transition-all duration-300 self-start"
                   >
                     {buttonText}
-                  </Link>
+                  </button>
                 </div>
               </div>
             );
@@ -204,6 +212,16 @@ export function ServicesSectionClient({
           </div>
         </div>
       </div>
+      <GetStartedForm 
+        open={formOpen} 
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) {
+            setSelectedService(undefined);
+          }
+        }} 
+        defaultService={selectedService} 
+      />
     </section>
   );
 }

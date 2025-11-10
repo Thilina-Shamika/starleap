@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Mail, MapPin, User, MessageSquareText, ArrowRight } from "lucide-react";
+import { Mail, MapPin, User, Briefcase, MessageSquareText, ArrowRight } from "lucide-react";
 
 export default function CallToAction() {
   const [loading, setLoading] = useState(false);
@@ -62,7 +62,7 @@ export default function CallToAction() {
                 {mounted && (
                 <form onSubmit={submit} className="grid gap-3 text-white" autoComplete="off" data-lpignore="true" data-lastpass-ignore="true">
                   <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
-                    <User className="h-4 w-4 text-white/70" />
+                    <User className="h-4 w-4 text-white/70 flex-shrink-0" />
                     <input
                       name="contact_name"
                       placeholder="Your name"
@@ -76,7 +76,7 @@ export default function CallToAction() {
                     />
                   </div>
                   <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
-                    <Mail className="h-4 w-4 text-white/70" />
+                    <Mail className="h-4 w-4 text-white/70 flex-shrink-0" />
                     <input
                       type="email"
                       name="contact_email"
@@ -88,13 +88,27 @@ export default function CallToAction() {
                       data-lastpass-ignore="true"
                     />
                   </div>
+                  <div className="flex items-center gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
+                    <Briefcase className="h-4 w-4 text-white/70 flex-shrink-0" />
+                    <select
+                      name="service_wanted"
+                      required
+                      className="w-full bg-transparent outline-none text-sm text-white appearance-none cursor-pointer"
+                      style={{ colorScheme: 'dark' }}
+                    >
+                      <option value="" className="bg-black text-white">Service wanted</option>
+                      <option value="video" className="bg-black text-white">Video</option>
+                      <option value="web" className="bg-black text-white">Web</option>
+                    </select>
+                  </div>
                   <div className="flex items-start gap-2 rounded-lg bg-white/5 border border-white/15 px-3 py-2">
-                    <MessageSquareText className="h-4 w-4 mt-1 text-white/70" />
+                    <MessageSquareText className="h-4 w-4 mt-1 text-white/70 flex-shrink-0" />
                     <textarea
-                      name="contact_message"
+                      name="contact_goals"
                       placeholder="Tell us about your goals"
                       rows={4}
-                      className="w-full bg-transparent outline-none text-sm placeholder:text-white/50"
+                      required
+                      className="w-full bg-transparent outline-none text-sm placeholder:text-white/50 resize-none"
                       autoComplete="off"
                       data-lpignore="true"
                       data-lastpass-ignore="true"
@@ -105,10 +119,10 @@ export default function CallToAction() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-500/40 via-purple-600/40 to-purple-500/40 border border-purple-400/40 hover:from-purple-500/50 hover:via-purple-600/50 hover:to-purple-500/50 disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-500/40 via-purple-600/40 to-purple-500/40 border border-purple-400/40 hover:from-purple-500/50 hover:via-purple-600/50 hover:to-purple-500/50 disabled:opacity-60 transition-all"
                     >
-                      {sent ? 'Message sent' : loading ? 'Sending…' : 'Send message'}
-                      <ArrowRight className="h-4 w-4" />
+                      {sent ? 'Message sent!' : loading ? 'Sending…' : 'Send message'}
+                      {!loading && !sent && <ArrowRight className="h-4 w-4" />}
                     </button>
                   </div>
                 </form>

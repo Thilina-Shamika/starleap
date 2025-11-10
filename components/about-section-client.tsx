@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from 'react';
 import Orb from './Orb';
 import Link from 'next/link';
 import { Video, Users, MessageCircle, Presentation } from 'lucide-react';
+import { GetStartedForm } from './get-started-form';
 
 type AboutSectionClientProps = {
   subheading?: string;
@@ -21,6 +23,8 @@ export function AboutSectionClient({
   buttonLink,
   buttonTarget
 }: AboutSectionClientProps) {
+  const [formOpen, setFormOpen] = useState(false);
+
   if (!heading && !description) {
     return null;
   }
@@ -67,20 +71,12 @@ export function AboutSectionClient({
 
               {(buttonText || buttonLink) && (
                 <div className="mt-6">
-                  {buttonLink ? (
-                    <Link
-                      href={buttonLink}
-                      target={buttonTarget === '_blank' ? '_blank' : undefined}
-                      rel={buttonTarget === '_blank' ? 'noopener noreferrer' : undefined}
-                      className="inline-flex items-center justify-center rounded-full px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 backdrop-blur-sm border border-purple-500/30 transition-all duration-300 shadow-lg hover:shadow-xl"
-                    >
-                      {buttonText ?? 'Schedule a Meeting'}
-                    </Link>
-                  ) : (
-                    <button className="inline-flex items-center justify-center rounded-full px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 backdrop-blur-sm border border-purple-500/30">
-                      {buttonText ?? 'Schedule a Meeting'}
-                    </button>
-                  )}
+                  <button
+                    onClick={() => setFormOpen(true)}
+                    className="inline-flex items-center justify-center rounded-full px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 backdrop-blur-sm border border-purple-500/30 transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    {buttonText ?? 'Schedule a Meeting'}
+                  </button>
 
                   {/* Meeting platform icons */}
                   <div className="mt-4 flex items-center justify-center gap-4 text-white/70">
@@ -96,6 +92,7 @@ export function AboutSectionClient({
           </div>
         </div>
       </div>
+      <GetStartedForm open={formOpen} onOpenChange={setFormOpen} />
     </section>
   );
 }
