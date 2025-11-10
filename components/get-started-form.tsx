@@ -13,6 +13,7 @@ type GetStartedFormProps = {
 export function GetStartedForm({ open, onOpenChange, defaultService }: GetStartedFormProps) {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const selectRef = useRef<HTMLSelectElement>(null);
   
   // Map service names to dropdown values
@@ -38,6 +39,7 @@ export function GetStartedForm({ open, onOpenChange, defaultService }: GetStarte
     if (!open) {
       setSent(false);
       setLoading(false);
+      setError(null);
       if (selectRef.current) {
         selectRef.current.value = '';
       }
@@ -48,18 +50,27 @@ export function GetStartedForm({ open, onOpenChange, defaultService }: GetStarte
     e.preventDefault();
     setLoading(true);
     setSent(false);
+    setError(null);
     const form = e.currentTarget;
     const data = new FormData(form);
     try {
-      await fetch('/api/lead', { method: 'POST', body: data });
+      const response = await fetch('/api/lead', { method: 'POST', body: data });
+      const result = await response.json();
+      
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Failed to submit form. Please try again.');
+      }
+      
       setSent(true);
       form.reset();
       setTimeout(() => {
         onOpenChange(false);
         setSent(false);
+        setError(null);
       }, 2000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error submitting form:', error);
+      setError(error.message || 'Failed to submit form. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -131,9 +142,21 @@ export function GetStartedForm({ open, onOpenChange, defaultService }: GetStarte
             />
           </div>
 
+          {error && (
+            <div className="rounded-lg bg-red-500/20 border border-red-500/50 px-4 py-3 text-sm text-red-200">
+              {error}
+            </div>
+          )}
+          
+          {sent && (
+            <div className="rounded-lg bg-green-500/20 border border-green-500/50 px-4 py-3 text-sm text-green-200">
+              Message sent successfully! We'll get back to you soon.
+            </div>
+          )}
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || sent}
             className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-500/40 via-purple-600/40 to-purple-500/40 border border-purple-400/40 hover:from-purple-500/50 hover:via-purple-600/50 hover:to-purple-500/50 disabled:opacity-60 transition-all"
           >
             {sent ? 'Message sent!' : loading ? 'Sending…' : 'Send message'}

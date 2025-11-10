@@ -6,6 +6,7 @@ import { Mail, MapPin, User, Briefcase, MessageSquareText, ArrowRight } from "lu
 export default function CallToAction() {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -16,12 +17,26 @@ export default function CallToAction() {
     e.preventDefault();
     setLoading(true);
     setSent(false);
+    setError(null);
     const form = e.currentTarget;
     const data = new FormData(form);
     try {
-      await fetch('/api/lead', { method: 'POST', body: data });
+      const response = await fetch('/api/lead', { method: 'POST', body: data });
+      const result = await response.json();
+      
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || 'Failed to submit form. Please try again.');
+      }
+      
       setSent(true);
       form.reset();
+      setTimeout(() => {
+        setSent(false);
+        setError(null);
+      }, 5000);
+    } catch (error: any) {
+      console.error('Error submitting form:', error);
+      setError(error.message || 'Failed to submit form. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -115,10 +130,23 @@ export default function CallToAction() {
                     />
                   </div>
                   <input type="hidden" name="source" value="cta" />
+                  
+                  {error && (
+                    <div className="rounded-lg bg-red-500/20 border border-red-500/50 px-4 py-3 text-sm text-red-200">
+                      {error}
+                    </div>
+                  )}
+                  
+                  {sent && (
+                    <div className="rounded-lg bg-green-500/20 border border-green-500/50 px-4 py-3 text-sm text-green-200">
+                      Message sent successfully! We'll get back to you soon.
+                    </div>
+                  )}
+                  
                   <div className="pt-1">
                     <button
                       type="submit"
-                      disabled={loading}
+                      disabled={loading || sent}
                       className="inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-purple-500/40 via-purple-600/40 to-purple-500/40 border border-purple-400/40 hover:from-purple-500/50 hover:via-purple-600/50 hover:to-purple-500/50 disabled:opacity-60 transition-all"
                     >
                       {sent ? 'Message sent!' : loading ? 'Sending…' : 'Send message'}
