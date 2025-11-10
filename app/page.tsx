@@ -35,6 +35,7 @@ export default async function Home() {
           description={acf?.hero_description}
           backgroundImageUrl={bgImageUrl}
           backgroundVideoUrl={bgVideoUrl}
+          buttonText={acf?.button_text}
         />
        
         <ServicesSection />

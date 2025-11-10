@@ -1,6 +1,7 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
+import { GetStartedForm } from "@/components/get-started-form";
 
 type HeroProps = {
   subHeading?: string;
@@ -8,13 +9,16 @@ type HeroProps = {
   description?: string;
   backgroundImageUrl?: string;
   backgroundVideoUrl?: string;
+  buttonText?: string;
 };
 
-export function Hero({ subHeading, heading, description, backgroundImageUrl, backgroundVideoUrl }: HeroProps) {
+export function Hero({ subHeading, heading, description, backgroundImageUrl, backgroundVideoUrl, buttonText }: HeroProps) {
   const heroRef = useRef<HTMLElement>(null);
   const subHeadingRef = useRef<HTMLParagraphElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const descriptionRef = useRef<HTMLParagraphElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const [formOpen, setFormOpen] = useState(false);
 
   useEffect(() => {
     const tl = gsap.timeline();
@@ -41,10 +45,18 @@ export function Hero({ subHeading, heading, description, backgroundImageUrl, bac
         0.1
       );
     }
-  }, []);
+    
+    if (buttonRef.current && buttonText) {
+      tl.fromTo(buttonRef.current, 
+        { opacity: 0, y: 8 }, 
+        { opacity: 1, y: 0, duration: 0.5 }, 
+        0.15
+      );
+    }
+  }, [buttonText]);
 
   return (
-    <section ref={heroRef} className="relative isolate h-dvh overflow-hidden rounded-2xl">
+    <section id="home" ref={heroRef} className="relative isolate h-dvh overflow-hidden rounded-2xl">
       {backgroundVideoUrl ? (
         <div className="pointer-events-none absolute inset-0 -z-10">
           <video
@@ -85,7 +97,7 @@ export function Hero({ subHeading, heading, description, backgroundImageUrl, bac
           {heading ? (
             <h1
               ref={headingRef}
-              className="mt-3 text-4xl font-semibold leading-tight tracking-tight sm:text-5xl md:text-6xl lg:text-[96px] lg:leading-[88px] lg:tracking-[-0.03em]"
+              className="mt-3 text-5xl font-semibold leading-tight tracking-tight sm:text-7xl md:text-6xl lg:text-[96px] lg:leading-[88px] lg:tracking-[-0.03em]"
             >
               {heading}
             </h1>
@@ -98,9 +110,19 @@ export function Hero({ subHeading, heading, description, backgroundImageUrl, bac
               {description}
             </p>
           ) : null}
+          {buttonText && (
+            <button
+              ref={buttonRef}
+              onClick={() => setFormOpen(true)}
+              className="mt-8 inline-flex items-center rounded-full bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 text-white px-6 py-3 text-base font-medium hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 transition-all"
+            >
+              {buttonText}
+            </button>
+          )}
           </div>
         </div>
       </div>
+      <GetStartedForm open={formOpen} onOpenChange={setFormOpen} />
     </section>
   );
 }

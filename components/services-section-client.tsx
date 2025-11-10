@@ -25,6 +25,7 @@ type ServicesSectionClientProps = {
     acf?: {
       service_name?: string;
       service_description?: string;
+      small_description?: string;
       service_icons?: string[]; // Array of icon names to use
       button_text?: string;
       button_link?: {
@@ -104,7 +105,7 @@ export function ServicesSectionClient({
   }
 
   return (
-    <section className="py-32 md:py-40 px-4 relative">
+    <section id="services" className="py-32 md:py-40 px-4 relative">
       <div className="max-w-7xl mx-auto relative z-10">
         <div className="grid lg:grid-cols-[1fr_2fr] gap-8 lg:gap-12">
           {/* Left Column - Heading Section */}
@@ -140,6 +141,7 @@ export function ServicesSectionClient({
           {services.map((service) => {
             const serviceName = service.acf?.service_name || 'Service';
             const serviceDescription = service.acf?.service_description || '';
+            const smallDescription = service.acf?.small_description || '';
             const buttonText = service.acf?.button_text || 'Learn more';
             const buttonLink = service.acf?.button_link?.url || service.link || '#';
             const buttonTarget = service.acf?.button_link?.target || '_self';
@@ -172,14 +174,14 @@ export function ServicesSectionClient({
                   )}
 
                   {/* Headline */}
-                  <h3 className="text-xl md:text-2xl font-bold text-white mb-4 leading-tight">
+                  <h3 className="text-xl md:text-2xl font-bold text-white mb-3 leading-tight">
                     {serviceDescription || 'Results that matter, Stories worth telling.'}
                   </h3>
 
-                  {/* Body Text (if available) */}
-                  {serviceDescription && serviceDescription.length > 50 && (
-                    <p className="text-white/80 text-sm leading-relaxed mb-6 flex-grow">
-                      Passion fuels every decision, from the way a brand communicates its story to how it delivers value to its audience. It transforms a business into more than just a product or service; it becomes a meaningful part of people's lives.
+                  {/* Small Description */}
+                  {smallDescription && (
+                    <p className="text-white/60 text-xs leading-relaxed mb-6 flex-grow">
+                      {smallDescription}
                     </p>
                   )}
 

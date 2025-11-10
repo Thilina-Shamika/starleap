@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { GetStartedForm } from "@/components/get-started-form";
 import { useState, useEffect } from "react";
 
 type MenuItem = { name: string; url: string; target?: string };
@@ -12,6 +14,9 @@ type MenuItem = { name: string; url: string; target?: string };
 export function SiteHeader({ siteName = "Site", items = [], ctaText, ctaLink }: { siteName?: string; items?: MenuItem[]; ctaText?: string; ctaLink?: string }) {
   const [open, setOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [formOpen, setFormOpen] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   useEffect(() => {
     setMounted(true);
@@ -25,20 +30,14 @@ export function SiteHeader({ siteName = "Site", items = [], ctaText, ctaLink }: 
             {siteName}
           </Link>
           <div className="hidden md:block">
-            <NavigationMenu>
-              <NavigationMenuList>
-                <NavigationMenuItem>
-                  <NavigationMenuLink href="/" className="px-3 py-2 text-white/90">
-                    Home
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem>
-                  <NavigationMenuLink href="/about" className="px-3 py-2 text-white/90">
-                    About
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </NavigationMenuList>
-            </NavigationMenu>
+            {ctaText && (
+              <button
+                onClick={() => setFormOpen(true)}
+                className="inline-flex items-center rounded-full bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 text-white px-4 py-2 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 transition-all"
+              >
+                {ctaText}
+              </button>
+            )}
           </div>
           <div className="md:hidden">
             <Button variant="ghost" size="icon" aria-label="Open menu" className="text-white hover:bg-white/10">
@@ -59,18 +58,21 @@ export function SiteHeader({ siteName = "Site", items = [], ctaText, ctaLink }: 
         <div className="hidden md:block">
           <NavigationMenu>
             <NavigationMenuList>
-              {items.map((it, i) => (
+              {isHomePage && items.map((it, i) => (
                 <NavigationMenuItem key={i}>
                   <NavigationMenuLink href={it.url} target={it.target} className="px-3 py-2 text-white/90">
                     {it.name}
                   </NavigationMenuLink>
                 </NavigationMenuItem>
               ))}
-              {ctaText && ctaLink && (
+              {ctaText && (
                 <NavigationMenuItem>
-                  <NavigationMenuLink href={ctaLink} className="ml-2 inline-flex items-center rounded-full bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 text-white px-4 py-2 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40">
+                  <button
+                    onClick={() => setFormOpen(true)}
+                    className={isHomePage ? "ml-2 inline-flex items-center rounded-full bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 text-white px-4 py-2 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 transition-all" : "inline-flex items-center rounded-full bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 text-white px-4 py-2 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 transition-all"}
+                  >
                     {ctaText}
-                  </NavigationMenuLink>
+                  </button>
                 </NavigationMenuItem>
               )}
             </NavigationMenuList>
@@ -88,21 +90,28 @@ export function SiteHeader({ siteName = "Site", items = [], ctaText, ctaLink }: 
                 <SheetTitle className="text-base font-semibold">{siteName}</SheetTitle>
               </SheetHeader>
               <nav className="mt-6 grid gap-2">
-                {items.map((it, i) => (
+                {isHomePage && items.map((it, i) => (
                   <Link key={i} href={it.url} target={it.target} className="rounded-md px-3 py-2 hover:bg-white/10" onClick={() => setOpen(false)}>
                     {it.name}
                   </Link>
                 ))}
-                {ctaText && ctaLink && (
-                  <Link href={ctaLink} className="mt-4 inline-flex items-center justify-center rounded-full px-4 py-2 text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30" onClick={() => setOpen(false)}>
+                {ctaText && (
+                  <button
+                    onClick={() => {
+                      setFormOpen(true);
+                      setOpen(false);
+                    }}
+                    className={isHomePage ? "mt-4 inline-flex items-center justify-center rounded-full px-4 py-2 text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 transition-all" : "inline-flex items-center justify-center rounded-full px-4 py-2 text-white bg-gradient-to-r from-purple-500/30 via-purple-600/30 to-purple-500/30 border border-purple-500/30 hover:from-purple-500/40 hover:via-purple-600/40 hover:to-purple-500/40 transition-all"}
+                  >
                     {ctaText}
-                  </Link>
+                  </button>
                 )}
               </nav>
             </SheetContent>
           </Sheet>
         </div>
       </div>
+      <GetStartedForm open={formOpen} onOpenChange={setFormOpen} />
     </header>
   );
 }

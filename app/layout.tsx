@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { LenisProvider } from "@/components/lenis-provider";
 import Aurora from "@/components/Aurora";
+import WhatsAppButtonServer from "@/components/whatsapp-button-server";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -58,6 +59,7 @@ export default function RootLayout({
             {children}
           </div>
         </LenisProvider>
+        <WhatsAppButtonServer />
       </body>
     </html>
   );

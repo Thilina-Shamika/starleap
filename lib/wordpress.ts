@@ -31,7 +31,11 @@ export type WordPressService = {
   acf?: {
     service_name?: string;
     service_description?: string;
+    small_description?: string;
     service_header?: string;
+    service_icons?: string[];
+    button_text?: string;
+    button_link?: { title?: string; url?: string; target?: string };
     gallery?: WordPressMedia[];
     project_link?: { title?: string; url?: string; target?: string };
     service_page_link_text?: string;
@@ -230,6 +234,28 @@ export async function getFooterConfig(): Promise<WordPressFooter | null> {
     return Array.isArray(results) && results.length ? results[0] : null;
   } catch (error) {
     console.error('Error fetching footer config:', error);
+    return null;
+  }
+}
+
+export type WhatsAppConfig = {
+  acf?: {
+    whatsapp_number?: string;
+  };
+};
+
+export async function getWhatsAppConfig(): Promise<WhatsAppConfig | null> {
+  try {
+    const results = await wpFetch<WhatsAppConfig[]>(
+      `/wp-json/wp/v2/whatsapp?_acf_format=standard&_fields=acf&per_page=1`
+    );
+    if (!results) {
+      console.warn('WhatsApp endpoint returned null (endpoint may not exist)');
+      return null;
+    }
+    return Array.isArray(results) && results.length ? results[0] : null;
+  } catch (error) {
+    console.error('Error fetching WhatsApp config:', error);
     return null;
   }
 }

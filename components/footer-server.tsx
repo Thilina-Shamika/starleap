@@ -2,6 +2,38 @@ import { getFooterConfig, getAcfOptions } from '@/lib/wordpress';
 import Link from 'next/link';
 import { MapPin, Phone, Mail, Facebook, Instagram, Twitter } from 'lucide-react';
 
+// Helper function to convert WordPress URLs to Next.js routes
+function convertToNextRoute(url: string | undefined): string {
+  if (!url || url === '#') return '#';
+  
+  // Keep anchor links as-is
+  if (url.startsWith('#')) return url;
+  
+  // Keep external links as-is
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    // Check if it's the same domain - if so, convert to relative path
+    const wpUrl = process.env.NEXT_PUBLIC_WORDPRESS_URL || '';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || wpUrl;
+    
+    if (siteUrl && url.startsWith(siteUrl)) {
+      // Extract the path from the full URL
+      try {
+        const urlObj = new URL(url);
+        const path = urlObj.pathname;
+        // Remove trailing slash and return
+        return path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
+      } catch {
+        return url;
+      }
+    }
+    // External link, keep as-is
+    return url;
+  }
+  
+  // Already a relative path, clean it up
+  return url.startsWith('/') ? url : `/${url}`;
+}
+
 export default async function FooterServer() {
   const [footer, options] = await Promise.all([getFooterConfig(), getAcfOptions()]);
   const siteName = options.siteName ?? 'Starleap Global';
@@ -10,11 +42,16 @@ export default async function FooterServer() {
   const socials: any[] = Array.isArray(acf.social_media_accounts) ? acf.social_media_accounts : [];
 
   const termsText: string | undefined = acf.terms_and_conditions;
-  const termsHref: string | undefined = typeof acf.terms_and_condition_link === 'string' ? acf.terms_and_condition_link : acf.terms_and_condition_link?.url;
+  const termsHrefRaw: string | undefined = typeof acf.terms_and_condition_link === 'string' ? acf.terms_and_condition_link : acf.terms_and_condition_link?.url;
+  const termsHref = convertToNextRoute(termsHrefRaw);
+  
   const privacyText: string | undefined = acf.privacy_policy;
-  const privacyHref: string | undefined = typeof acf.privacy_policy_link === 'string' ? acf.privacy_policy_link : acf.privacy_policy_link?.url;
+  const privacyHrefRaw: string | undefined = typeof acf.privacy_policy_link === 'string' ? acf.privacy_policy_link : acf.privacy_policy_link?.url;
+  const privacyHref = convertToNextRoute(privacyHrefRaw);
+  
   const returnText: string | undefined = acf.return_policy;
-  const returnHref: string | undefined = typeof acf.return_policy_link === 'string' ? acf.return_policy_link : acf.return_policy_link?.url;
+  const returnHrefRaw: string | undefined = typeof acf.return_policy_link === 'string' ? acf.return_policy_link : acf.return_policy_link?.url;
+  const returnHref = convertToNextRoute(returnHrefRaw);
 
   return (
     <footer className="px-4 py-12">
@@ -39,11 +76,22 @@ export default async function FooterServer() {
             <div>
               <h4 className="text-sm uppercase tracking-widest text-white/70">Menu</h4>
               <div className="mt-4 grid gap-2 text-sm">
-                {menu.map((m, i) => (
-                  <Link key={i} href={(m?.menu_item_link?.url || '#')} className="text-white/85 hover:text-white">
-                    {m?.menu_item_name}
-                  </Link>
-                ))}
+                {menu.map((m, i) => {
+                  const menuUrl = typeof m?.menu_item_link === 'string' ? m.menu_item_link : m?.menu_item_link?.url;
+                  const menuHref = convertToNextRoute(menuUrl);
+                  const menuTarget = typeof m?.menu_item_link === 'object' ? m.menu_item_link?.target : undefined;
+                  return (
+                    <Link 
+                      key={i} 
+                      href={menuHref || '#'} 
+                      target={menuTarget === '_blank' ? '_blank' : undefined}
+                      rel={menuTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                      className="text-white/85 hover:text-white"
+                    >
+                      {m?.menu_item_name}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
@@ -51,13 +99,28 @@ export default async function FooterServer() {
               <h4 className="text-sm uppercase tracking-widest text-white/70">Legal</h4>
               <div className="mt-4 grid gap-2 text-sm">
                 {privacyText && (
-                  <Link href={privacyHref || '#'} className="text-white/85 hover:text-white">{privacyText}</Link>
+                  <Link 
+                    href={privacyHref || '#'} 
+                    className="text-white/85 hover:text-white"
+                  >
+                    {privacyText}
+                  </Link>
                 )}
                 {termsText && (
-                  <Link href={termsHref || '#'} className="text-white/85 hover:text-white">{termsText}</Link>
+                  <Link 
+                    href={termsHref || '#'} 
+                    className="text-white/85 hover:text-white"
+                  >
+                    {termsText}
+                  </Link>
                 )}
                 {returnText && (
-                  <Link href={returnHref || '#'} className="text-white/85 hover:text-white">{returnText}</Link>
+                  <Link 
+                    href={returnHref || '#'} 
+                    className="text-white/85 hover:text-white"
+                  >
+                    {returnText}
+                  </Link>
                 )}
               </div>
             </div>

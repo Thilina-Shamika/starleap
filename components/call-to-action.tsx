@@ -28,7 +28,7 @@ export default function CallToAction() {
   }
 
   return (
-    <section className="px-4 py-20">
+    <section id="contact" className="px-4 py-20">
       <div className="w-full">
         <div className="relative w-full rounded-[28px] md:rounded-[32px] border border-white/10 bg-black/40 backdrop-blur-xl overflow-hidden shadow-[0_10px_40px_-10px_rgba(0,0,0,0.6)] py-16 md:py-24">
           {/* soft gradient like hero (purple → light purple → light red) */}

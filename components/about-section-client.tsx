@@ -26,7 +26,7 @@ export function AboutSectionClient({
   }
 
   return (
-    <section className="pt-8 md:pt-12 pb-32 md:pb-40 px-4 relative">
+    <section id="about" className="pt-8 md:pt-12 pb-32 md:pb-40 px-4 relative">
       <div className="max-w-7xl mx-auto">
         {/* Orb + Content in one centered container */}
         <div className="relative mx-auto w-full max-w-5xl h-[600px]">
