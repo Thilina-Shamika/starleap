@@ -20,7 +20,7 @@ export function GetStartedForm({ open, onOpenChange, defaultService }: GetStarte
   const getServiceValue = (serviceName?: string): string => {
     if (!serviceName) return '';
     const name = serviceName.toLowerCase();
-    if (name.includes('video') || name.includes('editing')) return 'video';
+    if (name.includes('a4m') || name.includes('video') || name.includes('editing')) return 'video';
     if (name.includes('web') || name.includes('development')) return 'web';
     return '';
   };

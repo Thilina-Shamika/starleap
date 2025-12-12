@@ -21,6 +21,13 @@ export type WordPressPage = {
     hero_description?: string;
     hero_background_image?: WordPressMedia | false;
     hero_background_video?: any;
+    a4m_heading?: string;
+    a4m_subheading?: string;
+    a4m_description?: string;
+    a4m_button_text?: string;
+    a4m_link?: { title?: string; url?: string; target?: string } | string;
+    text_link_text?: string;
+    text_link?: { title?: string; url?: string; target?: string } | string;
   };
 };
 
