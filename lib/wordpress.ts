@@ -114,9 +114,8 @@ async function wpFetch<T>(path: string, init?: RequestInit): Promise<T | null> {
   const url = `${WORDPRESS_URL.replace(/\/$/, "")}${path.startsWith("/") ? "" : "/"}${path}`;
   const res = await fetch(url, {
     ...init,
-    // Ensure fresh data for services
-    next: { revalidate: 0 },
-    cache: 'no-store'
+    // Use ISR with 60 second revalidation for fresh data while allowing static generation
+    next: { revalidate: 60 }
   } as any);
 
   if (!res.ok) {
